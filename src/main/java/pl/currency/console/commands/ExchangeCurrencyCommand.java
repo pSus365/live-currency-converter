@@ -33,12 +33,26 @@ public class ExchangeCurrencyCommand implements ConsoleCommand {
         System.out.print("To (code, e.g. EUR): ");
         String to = sc.nextLine().trim().toUpperCase(Locale.ROOT);
 
-        ExchangeRate r1 = table.getRate(from);
+        /*ExchangeRate r1 = table.getRate(from);
         ExchangeRate r2 = table.getRate(to);
         if (r1 == null || r2 == null) {
             System.out.println("Unknown currency code. Use option '1' to view available codes.");
             return false;
         }
+         */
+
+        // --- obsługa PLN jako waluty bazowej ---
+        ExchangeRate r1 = from.equals("PLN") ? new ExchangeRate("PLN", "polski złoty", 1.0) : table.getRate(from);
+        ExchangeRate r2 = to.equals("PLN") ? new ExchangeRate("PLN", "polski złoty", 1.0) : table.getRate(to);
+
+        // walidacja
+        if (r1 == null || r2 == null) {
+            System.out.println("Unknown currency code. Use option '1' to view available codes (or PLN).");
+            return false;
+        }
+
+
+
         double out = exchanger.exchange(amount, r1, r2);
         System.out.printf(Locale.ROOT, "%f %s = %.4f %s\n", amount, from, out, to);
         return false;
